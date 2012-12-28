@@ -39,16 +39,16 @@ def nonExcludedFileType(fileName):
 		return True
 	
 def writeJson(write_file,id,path,fileName,size):
-	if (id != 0):
+	if (id > 1):
 		write_file.write(',\n')
 
 	write_file.write('{ "id":"'+str(id)+'" , "file":"'+str(fileName).strip()+'" , "path":"'+str(path).strip()+'" , "size":"'+str(size).strip()+'" }')
 
 def writeJsonWrap(write_file,do):
 	if (do == 'start'):
-		write_file.write("{'files': [\n")
+		write_file.write('{"files": [\n')
 	else:
-		write_file.write("\n]}")
+		write_file.write('\n]}')
 		write_file.close()
 
 def init_poIndex(src_file,write_file):
