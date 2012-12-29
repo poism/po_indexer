@@ -1,3 +1,7 @@
+# Sherab Sangpo Dorje (po@poism.com)
+# Note, if you rename the 'po_indexer' folder, be sure to
+# update it below in nonExcludedFileType()
+
 import os #used to split path and filename
 
 src_file = os.path.join(os.path.dirname(__file__),"..","tmp/src_index.txt")

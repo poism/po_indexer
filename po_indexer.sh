@@ -1,4 +1,5 @@
 #!/bin/bash
+# Sherab Sangpo Dorje (po@poism.com)
 # Po's filesystem index to offline HTML search page
 # Drop this entire folder into the directory/network share you wish to index
 # Run ./po_indexer.sh and it will generate the index.html (search page) into the parent directory
