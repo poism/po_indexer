@@ -6,7 +6,8 @@
 # Also, of course make sure to chmod u+x po_indexer.sh
 # Add po_indexer.sh as a cronjob to automate 
 
-PAGE_HEADER="<h1>Podshare Search Index</h1>" #adjust this to the share name if you wish
+DATE=`date`
+PAGE_HEADER="<h1>Podshare Search Index</h1><p><b>Last updated:</b> $DATE</p>" #adjust this to the share name if you wish
 # If possible avoid messing with these paths, just put this whole folder in the directory you wish to index
 INDEX_PATH=../
 INDEX_PAGE=../index.html
