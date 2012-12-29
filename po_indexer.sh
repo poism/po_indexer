@@ -7,8 +7,6 @@
 # Also, of course make sure to chmod u+x po_indexer.sh
 # Add po_indexer.sh as a cronjob to automate 
 
-DATE=`date`
-PAGE_HEADER="<h1>Podshare Search Index</h1><p><b>Last updated:</b> $DATE</p>" #adjust this to the share name if you wish
 # If possible avoid messing with these paths, just put this whole folder in the directory you wish to index
 INDEX_PATH=../
 INDEX_PAGE=../index.html
@@ -17,11 +15,16 @@ INDEX_PAGE=../index.html
 START_PATH=`pwd`
 OUTPUT=/tmp/src_index.txt
 cd $INDEX_PATH
+DIR=${PWD##*/}
 find . -type f -exec du -h {} \; > $START_PATH$OUTPUT
 cd $START_PATH
 
 # Convert source index to JSON format
 python scripts/po_indexGenerator.py
+
+# Header text for the search page
+DATE=`date`
+PAGE_HEADER="<h1>$DIR Search Index</h1><p><b>Last updated:</b> $DATE</p>" #adjust this to the share name if you wish
 
 # Assemble index.html search page
 cat template/top.html > $INDEX_PAGE
