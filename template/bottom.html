@@ -1,11 +1,17 @@
 
-
-	<form name="search_form" action="">
+	<form id="search_form" name="search_form" action="">
 		<input type="text" id="search_query" >
+		<select id="search_type">
+			<option value="path_file">path + filename</option>
+			<option value="file">filename only</option>
+			<option value="path">path only</option>
+		</select>
 		<input type="submit" value="Search">
 	</form>
-	
+	<div class="result_info"></div>
+	<div class="result_nav"></div>
 	<div id="results"></div>
+	<div class="result_nav"></div>
 
 </body>
 </html>

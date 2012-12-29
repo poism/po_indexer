@@ -1,26 +1,94 @@
-;
-		function printResults(file,path,size){
-			str = '<div class="result"><a href="'+path+'/'+file+'" target="_BLANK"><span class="path">'+path+'/</span><span class="file">'+file+'</span></a> - <span class="size">'+size+'</span></div>\n';
-			$("#results").append(str);
-		};
-	
-		$("form").submit(function(){
-			$("#results").html("<h2>Search Results:</h2>");
-			var search_query = $("#search_query").val();
-			console.log(search_query);
-			var reg = new RegExp(search_query,"i");
 
-			$.each(json.files, function(i,v) {
-				if (v.file.search(reg) != -1) {
-					printResults(v.file,v.path,v.size);
-					return;
-				}
-			});
-			return false;
-		});
+;
+//end json
+
+$(document).ready(function(){
+
+/* Po Indexer Search JS start*/	
+	$('input#search_query').focus();
+
+	function replaceHtml(el, html) {
+	//function from: http://blog.stevenlevithan.com/archives/faster-than-innerhtml
+		var oldEl = typeof el === "string" ? document.getElementById(el) : el;
+		/*@cc_on // Pure innerHTML is slightly faster in IE
+			oldEl.innerHTML = html;
+			return oldEl;
+		@*/
+		var newEl = oldEl.cloneNode(false);
+		newEl.innerHTML = html;
+		oldEl.parentNode.replaceChild(newEl, oldEl);
+		/* Since we just removed the old element from the DOM, return a reference
+		to the new element, which can be used to restore variable references. */
+		return newEl;
+	};
+
+	var t = json.files.length;
+	$('.result_info').html("<p>"+t+" total files.</p>");
+	var results = [];
+	var resPerPg = 1000; // results per page, change as desired
+	var r = 0; // result count
 	
+	function resultsPage(pg){
+	// print search results
+		if (typeof results[pg] != 'undefined' && results[pg].length > 0){
+			$('.result_info').html("<p><b>Search results:</b> "+r+" matches out of "+t+" total files.</p>");
+			var navStr = "<b>Page</b> ";
+			for (var i=1; i <= results.length-1; i++){
+				if (pg == i) { navStr+=' | <b>'+i+'</b>'; }
+				else { navStr+=' | <a href="#" title="Result page '+i+'">'+i+'</a>'; }
+			}
+			
+			$('.result_nav').html(navStr);
+			replaceHtml('results',results[pg]);
+		}
+		else {
+			$('.result_info').html("<p><b>Search results:</b> 0 matches out of "+t+" total files.</p>");
+			$('.result_nav').html("");
+			replaceHtml('results',"");
+		}
+		$('a').each(function() {
+			if ($(this).attr('href') == '#'){
+				$(this).click( function() { resultsPage($(this).html()); });
+			}
+		});	
+		return false;
+	}
+
+	$("form#search_form").submit(function(){
+	// do search
+		var search_query = $("#search_query").val().trim();
+		var search_type = $("#search_type").val();
+		console.log("find: '"+search_query+"' in "+search_type);
+		var reg = new RegExp(search_query,"i");
+		var p = 1; // pg count
+		var m = false; // match
+		r = 0; // clear count
+		results = []; // clear results
+		results[1] = "";
+		for (var i=0; i<t; i++) {
+			m = false;
+			if (search_query.length < 2) { m = true; }
+			else if ( search_type == "file" && (json.files[i].file.search(reg) != -1)) { m = true; }
+			else if ( search_type == "path" && (json.files[i].path.search(reg) != -1)) { m = true; }
+			else if ( search_type == "path_file" && ( json.files[i].file.search(reg) != -1 || json.files[i].path.search(reg) != -1)) { m = true; }
+			
+			if ( m == true ){
+				if (r == p*resPerPg){
+					p++;
+					results[p]="";
+				}
+				r++;
+				// concat str into results[pg]
+				results[p]+='<div class="result">'+r+'.) <a href="'+json.files[i].path+'/'+json.files[i].file+'" target="_BLANK"><span class="path">'+json.files[i].path+'/</span><span class="file">'+json.files[i].file+'</span></a> - <span class="size">'+json.files[i].size+'</span></div>\n';
+			}
+		}			
+		resultsPage(1);
+		return false;
 	});
-	</script>
+/* Po Indexer Search JS end*/
+
+}); //end $(document).ready
+</script>
 </head>
 <body>
 

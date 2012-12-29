@@ -21,22 +21,26 @@ def fileInfo(line,id,write_file):
         startPos = line.find('./')
         endPos = line.find('\n')
         size = line[:startPos]
-        path, fileName = os.path.split(line[startPos-1:])
-        #type = fileName[fileName.find('.'):]
-        #title = fileName[:fileName.find('.')]   
-	if (nonExcludedFileType(fileName)):
+        path, file = os.path.split(line[startPos-1:])
+        #type = file[file.find('.'):]
+        #title = file[:file.find('.')]   
+	if (nonExcludedFileType(path,file)):
 		id = id + 1
-		writeJson(write_file,id,path,fileName,size)
+		writeJson(write_file,id,path,file,size)
 
 	return id
 
 
-def nonExcludedFileType(fileName):
-	fileName = fileName.strip()
-	if (fileName == 'Thumbs.db'):
-		return False
-	else:
-		return True
+def nonExcludedFileType(path,file):
+	r = True;
+	file = file.strip()
+	# Excluded Paths
+	if ((path.find('po_indexer') != -1) or (path.find('.git') != -1)):
+		r = False 
+	# Excluded Files
+	elif (file == 'Thumbs.db'):
+		r = False
+	return r
 	
 def writeJson(write_file,id,path,fileName,size):
 	if (id > 1):
