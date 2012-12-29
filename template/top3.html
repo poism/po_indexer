@@ -68,9 +68,9 @@ $(document).ready(function(){
 		for (var i=0; i<t; i++) {
 			m = false;
 			if (search_query.length < 2) { m = true; }
-			else if ( search_type == "file" && (json.files[i].file.search(reg) != -1)) { m = true; }
-			else if ( search_type == "path" && (json.files[i].path.search(reg) != -1)) { m = true; }
-			else if ( search_type == "path_file" && ( json.files[i].file.search(reg) != -1 || json.files[i].path.search(reg) != -1)) { m = true; }
+			else if ( search_type == "file" && (json.files[i].f.search(reg) != -1)) { m = true; }
+			else if ( search_type == "path" && (json.files[i].p.search(reg) != -1)) { m = true; }
+			else if ( search_type == "path_file" && ( json.files[i].f.search(reg) != -1 || json.files[i].p.search(reg) != -1)) { m = true; }
 			
 			if ( m == true ){
 				if (r == p*resPerPg){
@@ -79,7 +79,7 @@ $(document).ready(function(){
 				}
 				r++;
 				// concat str into results[pg]
-				results[p]+='<div class="result">'+r+'.) <a href="'+json.files[i].path+'/'+json.files[i].file+'" target="_BLANK"><span class="path">'+json.files[i].path+'/</span><span class="file">'+json.files[i].file+'</span></a> - <span class="size">'+json.files[i].size+'</span></div>\n';
+				results[p]+='<div class="result">'+r+'.) <a href="'+json.files[i].p+'/'+json.files[i].f+'" target="_BLANK"><span class="path">'+json.files[i].p+'/</span><span class="file">'+json.files[i].f+'</span></a> - <span class="size">'+json.files[i].s+'</span></div>\n';
 			}
 		}			
 		resultsPage(1);

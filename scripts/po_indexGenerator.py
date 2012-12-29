@@ -46,7 +46,7 @@ def writeJson(write_file,id,path,fileName,size):
 	if (id > 1):
 		write_file.write(',\n')
 
-	write_file.write('{ "id":"'+str(id)+'" , "file":"'+str(fileName).strip()+'" , "path":"'+str(path).strip()+'" , "size":"'+str(size).strip()+'" }')
+	write_file.write('{ "f":"'+str(fileName).strip()+'" , "p":"'+str(path).strip()+'" , "s":"'+str(size).strip()+'" }')
 
 def writeJsonWrap(write_file,do):
 	if (do == 'start'):
