@@ -1,18 +1,25 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset=utf-8 />
+	<meta charset="UTF-8">
 	<meta name="Author" content="S. Dorje, po@poism.com">
 	<title>Po's Directory Index Search</title>
 	<style>
+		a { color: blue; text-decoration: underline; }
 		body { font-family: Arial, Helvetica, sans-serif; }
-		div.result_info{}
-		div.result_nav{ padding:1em 0; }
-		div.result{ font-size: smaller; }
-		div.result{}
-		span.path{}
-		span.file{ font-weight:bold; }
-		span.size{}
+		div.result_info {}
+		div.result_nav { padding:1em 0; }
+		div.result_nav a { cursor: hand; cursor: pointer; color: blue; text-decoration: underline; }
+		div.result_nav a:hover { background-color:yellow; }
+		div#results { font-size: smaller; font-weight:bold; }
+		div.result { margin:0.6em; }
+		div.result span { margin:0 0.1em; padding:0.1em; }
+		div.result span.n { display:inline-block; text-align:right; background-color:#c0c0c0; color:white; }
+		div.result span.p { border:thin solid #c0c0c0; cursor: hand; cursor: pointer; }
+		div.result span.p:hover { background-color:yellow; }
+		div.result span.f { font-style:italic; }
+		div.result span.s { font-style:italic; }
+		div.result .sel { background-color:yellow; }
 	</style>
 
 <script type="text/javascript">

@@ -4,7 +4,7 @@
 
 $(document).ready(function(){
 
-/* Po Indexer Search JS start*/	
+/* Po Indexer Search JS start (po@poism.com) */	
 	$('input#search_query').focus();
 
 	function replaceHtml(el, html) {
@@ -27,59 +27,91 @@ $(document).ready(function(){
 	var results = [];
 	var resPerPg = 1000; // results per page, change as desired
 	var r = 0; // result count
+	var selPath = 0; // .sel path depth, keeps track of dir click
 	
+	// print search results page
 	function resultsPage(pg){
-	// print search results
 		if (typeof results[pg] != 'undefined' && results[pg].length > 0){
 			$('.result_info').html("<p><b>Search results:</b> "+r+" matches out of "+t+" total files.</p>");
 			var navStr = "<b>Page</b> ";
+			 // make page links
 			for (var i=1; i <= results.length-1; i++){
 				if (pg == i) { navStr+=' | <b>'+i+'</b>'; }
-				else { navStr+=' | <a href="#" title="Result page '+i+'">'+i+'</a>'; }
+				else { navStr+=' | <a>'+i+'</a>'; }
 			}
-			
 			$('.result_nav').html(navStr);
 			replaceHtml('results',results[pg]);
 		}
-		else {
+		// no results
+		else { 
 			$('.result_info').html("<p><b>Search results:</b> 0 matches out of "+t+" total files.</p>");
 			$('.result_nav').html("");
 			replaceHtml('results',"");
 		}
-		$('a').each(function() {
-			if ($(this).attr('href') == '#'){
-				$(this).click( function() { resultsPage($(this).html()); });
-			}
+		// click .result_nav page links
+		$('.result_nav a').each(function() { 
+			$(this).click( function() { resultsPage($(this).html()); });		
 		});
-		$('.path').each(function() {
-			$(this).click( function() { search($(this).text(),'path'); });
-		});		
+		// click span.p path dir for path dir search ( selPath )
+		$('span.p').each(function() { 
+			$(this).click( function() {
+				selPath = 0; //reset
+				selPath++;
+				var s = $(this).text();
+				var prev = $(this).prev();
+				// create path search, increment selPath
+				while (prev.hasClass('p')){
+					selPath++;
+					s = prev.text()+s;
+					prev = prev.prev();	
+				}
+				$("#search_query").val(s);
+				$("#search_type").val('path');
+				search(s,'path'); 
+			});
+		});
+		$('span.n').css('width',Math.ceil($('span.n').last().width())); // set all # widths to be equal
 		return false;
 	}
 	
+	// break each path dir into it's own span.path
 	function prepPath(p){
 		p = p.split('/');
-		var r = ''; //= p[0]+'/';
-		for (var i=1; i<p.length; i++){
-			r+='<span class="path">'+p[i]+'</span>/';
+		var rp = '';
+		var sp = 0;
+		var pa = '';
+		// create path string and add .sel (highlighting) if it's a selPath
+		for (var i=1; i<p.length-1; i++){
+			pa = '';
+			if (selPath >= i){
+				pa = 'sel';
+			}			
+			rp+='<span class="p '+pa+'">'+p[i]+'/</span>';
 		}
-		return r;
+		return rp;
 	}
+	
+	// search
 	function search(search_query,search_type){
+		scroll(0,0); // to top of page
 		console.log("find: '"+search_query+"' in "+search_type);
-		var reg = new RegExp(search_query,"i");
+		// use regexp, and escape special chars
+		var reg = new RegExp(search_query.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&"),"i");
 		var p = 1; // pg count
 		var m = false; // match
-		r = 0; // clear count
-		results = []; // clear results
+		r = 0; // reset count
+		results = []; // reset results
 		results[1] = "";
+		
+		// find matching
 		for (var i=0; i<t; i++) {
 			m = false;
 			if (search_query.length < 2) { m = true; }
 			else if ( search_type == "file" && (json.files[i].f.search(reg) != -1)) { m = true; }
 			else if ( search_type == "path" && (json.files[i].p.search(reg) != -1)) { m = true; }
 			else if ( search_type == "path_file" && ( json.files[i].f.search(reg) != -1 || json.files[i].p.search(reg) != -1)) { m = true; }
-			
+
+			// paginate
 			if ( m == true ){
 				if (r == p*resPerPg){
 					p++;
@@ -87,19 +119,21 @@ $(document).ready(function(){
 				}
 				r++;
 				// concat str into results[pg]
-				results[p]+='<div class="result">'+r+'.) <span class="path">'+prepPath(json.files[i].p)+'</span><a href="'+json.files[i].p+'/'+json.files[i].f+'" target="_BLANK"><span class="file">'+json.files[i].f+'</span></a> - <span class="size">'+json.files[i].s+'</span></div>\n';
+				results[p]+='<div class="result"><span class="n">'+r+'</span>'+prepPath(json.files[i].p)+'<span class="f"><a href="'+json.files[i].p+json.files[i].f+'" target="_BLANK">'+json.files[i].f+'</a></span><span class="s">'+json.files[i].s+'</span></div>';
 			}
 		}			
+		// print results
 		resultsPage(1);
 	}
 	
 	$("form#search_form").submit(function(){
 	// do search
+		selPath = 0; //reset
 		search($("#search_query").val().trim(),$("#search_type").val());
 		return false;
 	});
+	
 /* Po Indexer Search JS end*/
-
 
 }); //end $(document).ready
 </script>
