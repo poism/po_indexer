@@ -28,7 +28,22 @@ $(document).ready(function(){
 	var resPerPg = 1000; // results per page, change as desired
 	var r = 0; // result count
 	var selPath = 0; // .sel path depth, keeps track of dir click
-	
+	var subDir = []; // list of subfolders
+	var currPath = '';
+
+	function subDirNav(){
+		//for (var i=1; i<p.length-1; i++){
+		//json.files[i].p
+		var i = 0;
+		var str = "";
+		console.log("subDir.length="+subDir.length);
+		while (i < subDir.length){
+			str+='<span>'+subDir[i]+'</span>';
+			i++;
+		}
+		return str;
+	}
+
 	// print search results page
 	function resultsPage(pg){
 		if (typeof results[pg] != 'undefined' && results[pg].length > 0){
@@ -52,6 +67,17 @@ $(document).ready(function(){
 		$('.result_nav a').each(function() { 
 			$(this).click( function() { resultsPage($(this).html()); });		
 		});
+
+		// create #sub_dir_nav dir links
+		$('#sub_dir_nav').html(subDirNav());
+
+		// click #sub_dir span dir links
+		$('#sub_dir_nav span').each(function() {
+			$(this).click(function(){
+				search(currPath+$(this).text(),'path');
+			});
+		});
+		
 		// click span.p path dir for path dir search ( selPath )
 		$('span.p').each(function() { 
 			$(this).click( function() {
@@ -65,13 +91,21 @@ $(document).ready(function(){
 					s = prev.text()+s;
 					prev = prev.prev();	
 				}
-				$("#search_query").val(s);
-				$("#search_type").val('path');
 				search(s,'path'); 
 			});
 		});
 		$('span.n').css('width',Math.ceil($('span.n').last().width())); // set all # widths to be equal
 		return false;
+	} // end resultsPage()
+	
+	function getPath(sq){
+		var ls=sq.lastIndexOf('/');
+		var cp='';
+		if (ls != -1){
+			cp=sq.slice(0,ls)+'/';
+			console.log("currPath="+cp);
+		}
+		return cp;
 	}
 	
 	// break each path dir into it's own span.path
@@ -93,6 +127,9 @@ $(document).ready(function(){
 	
 	// search
 	function search(search_query,search_type){
+		$("#search_query").val(search_query);
+		$("#search_type").val(search_type);
+		currPath=getPath(search_query);
 		scroll(0,0); // to top of page
 		console.log("find: '"+search_query+"' in "+search_type);
 		// use regexp, and escape special chars
@@ -100,11 +137,30 @@ $(document).ready(function(){
 		var p = 1; // pg count
 		var m = false; // match
 		r = 0; // reset count
-		results = []; // reset results
+		subDir = []; // reset subDir[]
+		results = []; // reset results[]
 		results[1] = "";
 		
 		// find matching
 		for (var i=0; i<t; i++) {
+			// set subDirs[] of current dir
+			var sd = '';
+			if (search_query.length > 0 && currPath.length > 0){
+				var sd = json.files[i].p.slice(2,currPath.length+2);
+			}			
+			if (currPath == sd){
+				sd = json.files[i].p.substr(sd.length+2);
+				var sdi = sd.indexOf('/');
+				if (sdi != -1){
+					sd=sd.slice(0,sdi+1);
+					if (subDir[subDir.length-1] != sd){
+						subDir.push(sd); // add unique subDirs
+						console.log('subDir='+sd);
+					}
+				}
+			}
+			
+			// do search
 			m = false;
 			if (search_query.length < 2) { m = true; }
 			else if ( search_type == "file" && (json.files[i].f.search(reg) != -1)) { m = true; }
