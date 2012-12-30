@@ -7,26 +7,36 @@
 # Also, of course make sure to chmod u+x po_indexer.sh
 # Add po_indexer.sh as a cronjob to automate 
 
-# If possible avoid messing with these paths, just put this whole folder in the directory you wish to index
-INDEX_PATH=../
-INDEX_PAGE=../index.html
+# DIR_TO_INDEX, OUTPUT_PATH, and INDEX_PAGE can be changed
+# But, DIR_TO_INDEX and OUTPUT_PATH must be the same for html file links to work
+
+DIR_TO_INDEX=../
+OUTPUT_PATH=../
+INDEX_PAGE=index.html
+
+INDEX_PAGE=$OUTPUT_PATH$INDEX_PAGE
+
+APP_PATH="$(cd "${0%/*}" 2>/dev/null; echo "$PWD"/"${0##*/}")"
+APP_PATH=`dirname "$APP_PATH"`
 
 # Create source index 
-START_PATH=`pwd`
-OUTPUT=/tmp/src_index.txt
-cd $INDEX_PATH
-DIR=${PWD##*/}
-find . -type f -exec du -h {} \; > $START_PATH$OUTPUT
-cd $START_PATH
+cd $APP_PATH
+cd $DIR_TO_INDEX
+echo "Indexing `pwd`"
+DIR_NAME=${PWD##*/}
+find . -type f -exec du -h {} \; > "$APP_PATH/tmp/src_index.txt" 
+cd $APP_PATH
 
 # Convert source index to JSON format
-python scripts/po_indexGenerator.py
+echo "Running `pwd`/utilipo.py"
+python utilipo.py
 
 # Header text for the search page
 DATE=`date`
-PAGE_HEADER="<h1>$DIR Search Index</h1><p><b>Last updated:</b> $DATE</p>" #adjust this to the share name if you wish
+PAGE_HEADER="<h1>$DIR_NAME Search Index</h1><p><b>Last updated:</b> $DATE</p>" #adjust this to the share name if you wish
 
 # Assemble index.html search page
+echo "Assembling $INDEX_PAGE "
 cat template/top.html > $INDEX_PAGE
 cat template/js/jquery.js >> $INDEX_PAGE
 cat template/top2.html >> $INDEX_PAGE
@@ -36,5 +46,6 @@ echo $PAGE_HEADER >> $INDEX_PAGE
 cat template/bottom.html >> $INDEX_PAGE
 
 # Cleanup
+echo Cleaning up...
 rm tmp/*
 

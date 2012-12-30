@@ -4,8 +4,10 @@
 
 import os #used to split path and filename
 
-src_file = os.path.join(os.path.dirname(__file__),"..","tmp/src_index.txt")
-write_file = os.path.join(os.path.dirname(__file__),"..","tmp/index.json")
+#src_file = os.path.join(os.path.dirname(__file__),"..","tmp/src_index.txt")
+#write_file = os.path.join(os.path.dirname(__file__),"..","tmp/index.json")
+src_file = "tmp/src_index.txt"
+write_file = "tmp/index.json"
 
 def streamLines(src_file,write_file):
         f = open(src_file)
