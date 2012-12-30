@@ -50,14 +50,22 @@ $(document).ready(function(){
 			if ($(this).attr('href') == '#'){
 				$(this).click( function() { resultsPage($(this).html()); });
 			}
-		});	
+		});
+		$('.path').each(function() {
+			$(this).click( function() { search($(this).text(),'path'); });
+		});		
 		return false;
 	}
-
-	$("form#search_form").submit(function(){
-	// do search
-		var search_query = $("#search_query").val().trim();
-		var search_type = $("#search_type").val();
+	
+	function prepPath(p){
+		p = p.split('/');
+		var r = ''; //= p[0]+'/';
+		for (var i=1; i<p.length; i++){
+			r+='<span class="path">'+p[i]+'</span>/';
+		}
+		return r;
+	}
+	function search(search_query,search_type){
 		console.log("find: '"+search_query+"' in "+search_type);
 		var reg = new RegExp(search_query,"i");
 		var p = 1; // pg count
@@ -79,13 +87,19 @@ $(document).ready(function(){
 				}
 				r++;
 				// concat str into results[pg]
-				results[p]+='<div class="result">'+r+'.) <a href="'+json.files[i].p+'/'+json.files[i].f+'" target="_BLANK"><span class="path">'+json.files[i].p+'/</span><span class="file">'+json.files[i].f+'</span></a> - <span class="size">'+json.files[i].s+'</span></div>\n';
+				results[p]+='<div class="result">'+r+'.) <span class="path">'+prepPath(json.files[i].p)+'</span><a href="'+json.files[i].p+'/'+json.files[i].f+'" target="_BLANK"><span class="file">'+json.files[i].f+'</span></a> - <span class="size">'+json.files[i].s+'</span></div>\n';
 			}
 		}			
 		resultsPage(1);
+	}
+	
+	$("form#search_form").submit(function(){
+	// do search
+		search($("#search_query").val().trim(),$("#search_type").val());
 		return false;
 	});
 /* Po Indexer Search JS end*/
+
 
 }); //end $(document).ready
 </script>
