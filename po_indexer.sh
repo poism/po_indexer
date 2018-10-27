@@ -19,6 +19,10 @@ INDEX_PAGE=$OUTPUT_PATH$INDEX_PAGE
 APP_PATH="$(cd "${0%/*}" 2>/dev/null; echo "$PWD"/"${0##*/}")"
 APP_PATH=`dirname "$APP_PATH"`
 
+if [ ! -d "$APP_PATH/tmp" ]; then
+	mkdir "$APP_PATH/tmp"
+fi
+
 # Create source index 
 cd $APP_PATH
 cd $DIR_TO_INDEX
